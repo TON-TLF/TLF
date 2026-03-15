@@ -39,13 +39,7 @@ void TDEffiCuts::Setparam(double _spfac, double _wfac){
     TDEffiCuts::wfac = _wfac;
 }
 
-/**
- * @brief 根据给定规则创建TDEffiCuts树。
- * @param rules 规则指针的向量。
- * @return bool 表示创建是否成功。
- */
 void TDEffiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
-    /** 根据规则数量设置最大深度 */
     int rules_nums = rules.size();
     sort(rules.begin(), rules.end(), CmpRulePriority);
 
@@ -58,7 +52,6 @@ void TDEffiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
     bounds[0][1] = bounds[1][1] =0xFFFFFFFF;
 	TDEffiCuts::total_trace_num = traceFreqMat2d::getTracenum2D(bounds);
 
-    /** 预处理规则 */
     Category category;
     category.Init();
     category.ProcessRule(rules);
@@ -75,12 +68,6 @@ void TDEffiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
 	sort(root, root + tree_num, CmpTDEffiNodePriority);
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @param ps 程序状态指针。
- * @return 查找结果的优先级。
- */
 uint32_t TDEffiCuts::Lookup(Trace *trace, ProgramState *ps) {
     uint32_t ans = 0;
 	for (int i = 0; i < tree_num; ++i) {
@@ -144,11 +131,6 @@ uint32_t TDEffiCuts::Lookup(Trace *trace, ProgramState *ps) {
 	return ans;
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @return 查找结果的优先级。
- */
 uint32_t TDEffiCuts::Lookup(Trace *trace) {
     uint32_t ans = 0;
 	for (int i = 0; i < tree_num; ++i) {
@@ -201,10 +183,6 @@ uint32_t TDEffiCuts::Lookup(Trace *trace) {
 	return ans;
 }
 
-/**
- * @brief 计算TDEffiCuts树使用的内存大小。
- * @return 内存大小（字节）。
- */
 uint64_t TDEffiCuts::CalMemory() {
 	uint64_t memory_cost = sizeof(TDEffiCuts);
 	for (int i = 0; i < TDEffiCuts::tree_num; ++i)
@@ -212,9 +190,6 @@ uint64_t TDEffiCuts::CalMemory() {
 	return memory_cost;
 }
 
-/**
- * @brief 释放HyperSplit树的内存。
- */
 TDEffiCuts::~TDEffiCuts() {
     if(root){
         for (int i = 0; i < TDEffiCuts::tree_num; ++i){

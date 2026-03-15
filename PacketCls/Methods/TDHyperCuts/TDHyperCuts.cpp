@@ -34,13 +34,7 @@ void TDHyperCuts::Setparam(double _spfac, double _wfac){
     TDHyperCuts::wfac = _wfac;
 }
 
-/**
- * @brief 根据给定规则创建TDHyperCuts树。
- * @param rules 规则指针的向量。
- * @return bool 表示创建是否成功。
- */
 void TDHyperCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
-    /** 根据规则数量设置最大深度 */
     int rules_nums = rules.size();
     sort(rules.begin(), rules.end(), CmpRulePriority);
 
@@ -59,12 +53,6 @@ void TDHyperCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
     root->Create(ps, 0);
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @param ps 程序状态指针。
- * @return 查找结果的优先级。
- */
 uint32_t TDHyperCuts::Lookup(Trace *trace, ProgramState *ps) {
     
     uint32_t ans = 0;
@@ -121,11 +109,6 @@ uint32_t TDHyperCuts::Lookup(Trace *trace, ProgramState *ps) {
 	return ans;
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @return 查找结果的优先级。
- */
 uint32_t TDHyperCuts::Lookup(Trace *trace) {
     
     uint32_t ans = 0;
@@ -168,19 +151,12 @@ uint32_t TDHyperCuts::Lookup(Trace *trace) {
 	return ans;
 }
 
-/**
- * @brief 计算TDHyperCuts树使用的内存大小。
- * @return 内存大小（字节）。
- */
 uint64_t TDHyperCuts::CalMemory() {
 	uint64_t memory_cost = sizeof(TDHyperCuts);
 	memory_cost += root->CalMemory();
 	return memory_cost;
 }
 
-/**
- * @brief 释放HyperSplit树的内存。
- */
 TDHyperCuts::~TDHyperCuts() {
     if(root) delete root;
 }

@@ -34,16 +34,10 @@ void TDHiCuts::Setparam(double _spfac, double _wfac){
     TDHiCuts::wfac = _wfac;
 }
 
-/**
- * @brief 根据给定规则创建TDHiCuts树。
- * @param rules 规则指针的向量。
- * @return bool 表示创建是否成功。
- */
 void TDHiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
     int rules_nums = rules.size();
     sort(rules.begin(), rules.end(), CmpRulePriority);
 
-    /** 根据规则数量设置最大深度 */
 	if      (rules_nums >= 90000) TDHiCuts::leaf_size = 32, TDHiCuts::max_depth = 6;
     else if (rules_nums >= 40000) TDHiCuts::leaf_size = 24, TDHiCuts::max_depth = 5;
     else                          TDHiCuts::leaf_size = 16, TDHiCuts::max_depth = 4;
@@ -59,12 +53,6 @@ void TDHiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
     root->Create(ps, 0);
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @param ps 程序状态指针。
- * @return 查找结果的优先级。
- */
 uint32_t TDHiCuts::Lookup(Trace *trace, ProgramState *ps) {
     uint32_t ans = 0;
     TDHiNode *node = root;
@@ -111,11 +99,6 @@ uint32_t TDHiCuts::Lookup(Trace *trace, ProgramState *ps) {
 	return ans;
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @return 查找结果的优先级。
- */
 uint32_t TDHiCuts::Lookup(Trace *trace) {
     uint32_t ans = 0;
     TDHiNode *node = root;
@@ -148,10 +131,6 @@ uint32_t TDHiCuts::Lookup(Trace *trace) {
 	return ans;
 }
 
-/**
- * @brief 计算TDHiCuts树使用的内存大小。
- * @return 内存大小（字节）。
- */
 uint64_t TDHiCuts::CalMemory() {
 	uint64_t memory_cost = sizeof(TDHiCuts);
 	memory_cost += root->CalMemory();

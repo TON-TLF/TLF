@@ -13,17 +13,10 @@ void TDHyperSplit::Setparam(double _pfac){
     TDHyperSplit::pfac = _pfac;
 }
 
-/**
- * @brief 根据给定规则创建HyperSplitMat2D树。
- * @param rules 规则指针的向量。
- * @param ps 程序状态指针。
- */
 void TDHyperSplit::Create(vector<Rule*> &rules, ProgramState *ps) {
-    /** 对规则集按照优先级进行排序 */
 	int rules_num = rules.size();
 	sort(rules.begin(), rules.end(), CmpRulePriority);
 
-    /** 根据规则数量设置叶子节点阈值 */
 	if      (rules_num <= 20000) TDHyperSplit::binth = 16;
 	else if (rules_num <= 60000) TDHyperSplit::binth = 24;
 	else                         TDHyperSplit::binth = 32;
@@ -38,12 +31,6 @@ void TDHyperSplit::Create(vector<Rule*> &rules, ProgramState *ps) {
     root->Create(rules, ps, bounds, 0);
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @param ps 程序状态指针。
- * @return 查找结果的优先级。
- */
 uint32_t TDHyperSplit::Lookup(Trace *trace, ProgramState *ps) {
 	TDHsNode *node = root;
 	while (node->child[0] != NULL) {
@@ -77,11 +64,6 @@ uint32_t TDHyperSplit::Lookup(Trace *trace, ProgramState *ps) {
 	return ans;
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @return 查找结果的优先级。
- */
 uint32_t TDHyperSplit::Lookup(Trace *trace) {
 	TDHsNode *node = root;
 	while (node->child[0] != NULL) {
@@ -100,10 +82,6 @@ uint32_t TDHyperSplit::Lookup(Trace *trace) {
 	return ans;
 }
 
-/**
- * @brief 计算HyperSplitMat2D树使用的内存大小。
- * @return 内存大小（字节）。
- */
 uint64_t TDHyperSplit::CalMemory() {
 	uint64_t memory_size = sizeof(TDHyperSplit);
 	memory_size += root->CalMemory();

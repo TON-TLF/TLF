@@ -24,21 +24,14 @@ void EffiCuts::Setparam(double _spfac){
     EffiCuts::spfac = _spfac;
 }
 
-/**
- * @brief 根据给定规则创建EffiCuts树。
- * @param rules 规则指针的向量。
- * @return bool 表示创建是否成功。
- */
 void EffiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
     int rules_nums = rules.size();
     sort(rules.begin(), rules.end(), CmpRulePriority);
 
-    /** 根据规则数量设置最大深度 */
 	if      (rules_nums >= 90000) EffiCuts::max_depth = 6;
     else if (rules_nums >= 40000) EffiCuts::max_depth = 5;
     else                          EffiCuts::max_depth = 4;
     
-    /** 预处理规则 */
     Category category;
     category.Init();
     category.ProcessRule(rules);
@@ -55,12 +48,6 @@ void EffiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
 	sort(root, root + tree_num, CmpEffiNodePriority);
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @param ps 程序状态指针。
- * @return 查找结果的优先级。
- */
 uint32_t EffiCuts::Lookup(Trace *trace, ProgramState *ps) {
     uint32_t ans = 0;
 	for (int i = 0; i < tree_num; ++i) {
@@ -124,12 +111,6 @@ uint32_t EffiCuts::Lookup(Trace *trace, ProgramState *ps) {
 	return ans;
 }
 
-
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @return 查找结果的优先级。
- */
 uint32_t EffiCuts::Lookup(Trace *trace) {
     uint32_t ans = 0;
 	for (int i = 0; i < tree_num; ++i) {
@@ -180,10 +161,6 @@ uint32_t EffiCuts::Lookup(Trace *trace) {
 	return ans;
 }
 
-/**
- * @brief 计算EffiCuts树使用的内存大小。
- * @return 内存大小（字节）。
- */
 uint64_t EffiCuts::CalMemory() {
 	uint64_t memory_cost = sizeof(EffiCuts);
 	for (int i = 0; i < EffiCuts::tree_num; ++i)
@@ -191,9 +168,6 @@ uint64_t EffiCuts::CalMemory() {
 	return memory_cost;
 }
 
-/**
- * @brief 释放HyperSplit树的内存。
- */
 EffiCuts::~EffiCuts() {
     if(root){
         for (int i = 0; i < EffiCuts::tree_num; ++i){

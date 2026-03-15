@@ -19,13 +19,8 @@ HiCuts::HiCuts(){
 void HiCuts::Setparam(double _spfac){
     HiCuts::spfac = _spfac;
 }
-/**
- * @brief 根据给定规则创建HiCuts树。
- * @param rules 规则指针的向量。
- * @return bool 表示创建是否成功。
- */
+
 void HiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
-    /** 根据规则数量设置最大深度 */
     int rules_nums = rules.size();
 	if      (rules_nums >= 90000) HiCuts::leaf_size = 32, HiCuts::max_depth = 6;
     else if (rules_nums >= 40000) HiCuts::leaf_size = 24, HiCuts::max_depth = 5;
@@ -39,12 +34,6 @@ void HiCuts::Create(vector<Rule*> &rules, ProgramState *ps) {
     root->Create(ps, 0);
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @param ps 程序状态指针。
- * @return 查找结果的优先级。
- */
 uint32_t HiCuts::Lookup(Trace *trace, ProgramState *ps) {
     uint32_t ans = 0;
     HiNode *node = root;
@@ -91,11 +80,6 @@ uint32_t HiCuts::Lookup(Trace *trace, ProgramState *ps) {
 	return ans;
 }
 
-/**
- * @brief 查找并访问Trace，同时更新程序状态。
- * @param trace Trace对象的指针。
- * @return 查找结果的优先级。
- */
 uint32_t HiCuts::Lookup(Trace *trace) {
     uint32_t ans = 0;
     HiNode *node = root;
@@ -130,10 +114,6 @@ uint32_t HiCuts::Lookup(Trace *trace) {
 	return ans;
 }
 
-/**
- * @brief 计算HiCuts树使用的内存大小。
- * @return 内存大小（字节）。
- */
 uint64_t HiCuts::CalMemory() {
 	uint64_t memory_cost = sizeof(HiCuts);
 	memory_cost += root->CalMemory();

@@ -3,11 +3,6 @@
 vector<uint32_t> traceFreqMat2d::key[2];
 Eigen::SparseMatrix<uint32_t> traceFreqMat2d::mat;
 
-/**
- * @brief 获取在子空间范围里的流量的频数之和
- * @param bounds 表示子空间范围的数组
- * @return double 频数之和
- */
 double traceFreqMat2d::getTracenum2D(uint32_t bounds[][2]){
     uint32_t lid[2],rid[2];
     for (int d = 0; d < 2; ++d){
@@ -24,7 +19,6 @@ double traceFreqMat2d::getTracenum2D(uint32_t bounds[][2]){
 }
 
 void traceFreqMat2d::init(vector<TraceFreq> &topktraces){
-    /** 获取每个流量每个维度的所有key值 */
     set<uint32_t> s[2];
     int topktraces_num = topktraces.size();
 	for(int i = 0; i < topktraces_num; ++i){
@@ -33,7 +27,6 @@ void traceFreqMat2d::init(vector<TraceFreq> &topktraces){
 		}
 	}
     
-    /** 将排序好的key值放入vector容器中 */
 	for(int d = 0; d < 2; ++d){
 		for(auto it : s[d]){
             traceFreqMat2d::key[d].push_back(it);
@@ -42,7 +35,6 @@ void traceFreqMat2d::init(vector<TraceFreq> &topktraces){
     
     mat.resize(traceFreqMat2d::key[0].size() + 1000, traceFreqMat2d::key[1].size() + 1000);
 
-    /** 将完成映射后的流量存储矩阵 */
     uint32_t tkey[2];
     for(int i = 0; i < topktraces_num; ++i){
         tkey[0] = topktraces[i].trace.key[0];
@@ -56,18 +48,15 @@ void traceFreqMat2d::init(vector<TraceFreq> &topktraces){
 uint64_t traceFreqMat2d::CalMemory() {
     uint64_t size = 0;
 
-    // 计算 key 数组的大小
     for (int i = 0; i < 2; ++i) {
-        size += sizeof(key[i]);  // vector 本身的大小
-        size += key[i].capacity() * sizeof(uint32_t);  // vector 中实际存储的 uint32_t 的大小
+        size += sizeof(key[i]);  
+        size += key[i].capacity() * sizeof(uint32_t); 
     }
 
-    // 计算 mat 稀疏矩阵的大小
-    size += sizeof(mat);  // 稀疏矩阵对象的大小
-    size += mat.nonZeros() * sizeof(uint32_t);  // 稀疏矩阵中非零元素的大小
-    // 计算 innerIndexPtr 和 outerIndexPtr 的大小
-    size += mat.nonZeros() * sizeof(int);                // innerIndexPtr 大小
-    size += mat.outerSize() * sizeof(int);               // outerIndexPtr 大小
+    size += sizeof(mat);  
+    size += mat.nonZeros() * sizeof(uint32_t); 
+    size += mat.nonZeros() * sizeof(int);              
+    size += mat.outerSize() * sizeof(int);              
 
     return size;
 }

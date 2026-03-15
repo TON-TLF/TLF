@@ -24,19 +24,16 @@ int main(int argc, char *argv[]){
     
     ps = new ProgramState;
 
-    /** 读取规则集与流量集 */
     rules = ReadRules(Command::rules_file, 0);
     traces = ReadTraces(Command::traces_file);
     rules_num = rules.size();
     traces_num = traces.size();
 
-    /** 将流量转化为字符串形式存储，为插入到 sketch 中做准备 */
     string *trace_str = new string[traces_num + 10];
     for(int i = 0; i < traces_num; i++){ 
         trace_str[i] = traceToString(traces[i]);   
     }   
 
-    /** 使用 sketch 对流量进行统计 */
     clock_gettime(CLOCK_MONOTONIC, &ts_start);
     TDHeavyKeeper sketch(Command::topk_num, 0.4 * 1024 * 1024 / 16);
     for(int i = 0; i < traces_num; i++){
@@ -47,7 +44,6 @@ int main(int argc, char *argv[]){
     ps->avg_insert_time = GetTimeInMicroSeconds(ts_start, ts_end) / traces_num;
     cout << "Sketch insert over!" << endl;
 
-    /** 计算 topk 流量 */
     clock_gettime(CLOCK_MONOTONIC, &ts_start);
     vector<TFNode> hkTF = sketch.work();  
     vector<TraceFreq> topktracesfreq = TFNodeToTraceFreq(hkTF);
@@ -55,7 +51,6 @@ int main(int argc, char *argv[]){
     ps->sketch_calculate_topk_time = GetTimeInSeconds(ts_start, ts_end);
     cout<<"Cal Topk over!"<<endl;
 
-    /** 准备 Topk 流量数组，为后续查询测试做准备 */
     int topktracesfreq_num = topktracesfreq.size();
 	std::vector<Trace*> topktraces;
 	for(int i = 0; i < topktracesfreq_num; i++){
@@ -65,14 +60,12 @@ int main(int argc, char *argv[]){
 	}
     int topktraces_num = topktraces.size();
 
-    /** 构建 topk 查询矩阵 */
     clock_gettime(CLOCK_MONOTONIC, &ts_start);
     traceFreqMat2d::init(topktracesfreq);
     clock_gettime(CLOCK_MONOTONIC, &ts_end);
     ps->topk_tracesMat_init_time = GetTimeInSeconds(ts_start, ts_end);
     cout<<"Topk TracesMat Init over!"<<endl;
 
-    /** 定义程序状态对象，用于记录程序执行过程中的各种信息 */
     ps->rules_num = rules_num;
     ps->traces_num = traces_num;
     ps->topk_traces_num = topktraces_num;
@@ -82,7 +75,6 @@ int main(int argc, char *argv[]){
     ps->topk_tracesFreq_memory_size = topktracesfreq_num * sizeof(TraceFreq) / 1024.0 / 1024.0; 
 	ps->TracesMat_memory_size = traceFreqMat2d::CalMemory() / 1024.0 / 1024.0;  
     
-    /** 使用对应算法的分类器生成查询结果 */
     bool is_Mat = false;
     std::vector<int> Ans;
     Classifier *classifier;
@@ -115,7 +107,6 @@ int main(int argc, char *argv[]){
         classifier = new TDHiCuts;
     }
     else if (Command::method_name == "Auto" ){
-        /** 统计时间维度 */
         clock_gettime(CLOCK_MONOTONIC, &ts_start);
         double src_ranges = calculate_range(rules, 0);
         double dst_ranges = calculate_range(rules, 1);
@@ -138,7 +129,6 @@ int main(int argc, char *argv[]){
         }
     }
     
-    /** 构建查找结构 */
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
     classifier->Create(rules, ps);
 	clock_gettime(CLOCK_MONOTONIC, &ts_end);
@@ -165,11 +155,9 @@ int main(int argc, char *argv[]){
     }
 	std::cout<<"Create over!"<<std::endl;     
     
-    /** 测试查询性能 */
 	int lookup_round = Command::lookup_round;
     uint64_t total_lookup_cycles = 0;
     double total_lookup_times = 0;
-    /** 测试平均访存次数 */
 	for (int k = 0; k < lookup_round; ++k){
 		Ans.clear();
 		for (int i = 0; i < traces_num; ++i){
@@ -179,7 +167,6 @@ int main(int argc, char *argv[]){
     ps->CalInfo();
     ps->ClearAccess();
 
-    /** 测试平均查询时间 */
     clock_gettime(CLOCK_MONOTONIC, &ts_start);
     for (int k = 0; k < lookup_round; ++k){
 		for (int i = 0; i < traces_num; ++i){

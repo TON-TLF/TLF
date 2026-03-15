@@ -1,17 +1,7 @@
 #include "io.h"
 
 using namespace std;
-/**
- * @brief 字符串分割函数，根据指定模式将字符串拆分为子字符串的向量
- * @param str 待分割字符串
- * @param pattern 字符集，字符串可以被字符集中任意一个字符分割
- * 
- * @return ret 返回装有分割后的字符串的vector容器
- * 
- * find_first_of 会在字符串中逐个字符地寻找目标字符集中的任何一个字符，
- * 一旦找到就会告诉你它的位置。如果你找的字符一个都没有出现，函数就会告
- * 诉你没有找到。
- */
+
 vector<string> StrSplit(const string& str, const string& pattern) {
     vector<string> ret;
     if(pattern.empty())
@@ -28,34 +18,18 @@ vector<string> StrSplit(const string& str, const string& pattern) {
     return ret;
 }
 
-/**
- * @brief 将IP地址字符串转换为32位整数形式
- * @param str 字符串形式的IP
- * @return uint32_t 返回32位整数形式的IP
- */
 uint32_t GetIp(string str) {
 	uint32_t num1, num2, num3, num4;
 	sscanf(str.c_str(),"%u.%u.%u.%u", &num1, &num2, &num3, &num4);
 	return (num1 << 24) | (num2 << 16) | (num3 << 8) | num4;
 }
 
-/**
- * @brief:将32位整数IP转换为字符串形式
- * @param ip 32位整数IP
- * 
- * @return str 字符串形式的IP
- */
 string GetIpStr(uint32_t ip) {
     char str[100];
     sprintf(str, "%d.%d.%d.%d", ip >> 24, ip >> 16 & 255, ip >> 8 & 255, ip & 255);
     return str;
 }
 
-/**
- * @brief 计算64位整数中二进制位为1的个数
- * @param num 待计算的整数
- * @return ans 二进制位为1的个数
- */
 int Count1(uint64_t num) {
 	int ans = 0;
 	while (num) {
@@ -65,17 +39,6 @@ int Count1(uint64_t num) {
 	return ans;
 }
 
-/**
- * @brief 读取规则文件，并根据需要是否打乱规则顺序
- * @param rules_file 规则文件名
- * @param rules_shuffle 控制是否打乱的参数，大于0打乱，否则不打乱
- * 
- * @return Rules 返回装有规则的vector容器
- * 
- * atoi() 函数的作用是将一个以字符串形式表示的整数转换为一个 int 类型的整数
- * strtoul() 用于将字符串转换为无符号长整型 (unsigned long) 数字
- * ? 为什么优先级要这样设置，以及为什么每次读取1000字节 
- */
 vector<Rule*> ReadRules(string rules_file, int rules_shuffle) {
 	FILE *fp = fopen(rules_file.c_str(), "rb");
 	if (!fp){
@@ -131,12 +94,6 @@ vector<Rule*> ReadRules(string rules_file, int rules_shuffle) {
     return rules;
 }
 
-/**
- * @brief 读取规则容器，并打印到指定文件
- * @param rules 装有规则的容器
- * @param output_file 输出到的文件名
- * @param print_priority 控制是否打印优先级
- */
 void PrintRules(vector<Rule*> &rules, string output_file, bool print_priority) {
     int rules_num = rules.size();
     FILE *fp = fopen(output_file.c_str(), "w");
@@ -161,11 +118,6 @@ void PrintRules(vector<Rule*> &rules, string output_file, bool print_priority) {
     fclose(fp);
 }
 
-/**
- * @brief 打印规则
- * @param rule 规则指针
- * @param print_priority 控制是否打印优先级
- */
 void PrintRule(Rule* &rule, bool print_priority) {
     printf("@");
     for (int j = 0; j < 2; ++j) {
@@ -185,12 +137,6 @@ void PrintRule(Rule* &rule, bool print_priority) {
     printf("\n");
 }
 
-/**
- * @brief 读取流量数据文件并返回
- * @param traces_file 流量文件名
- * 
- * @return traces 返回装有流量的vector容器
- */
 vector<Trace*> ReadTraces(string traces_file) {
 	FILE *fp = fopen(traces_file.c_str(), "rb");
 	if (!fp){
@@ -215,11 +161,6 @@ vector<Trace*> ReadTraces(string traces_file) {
     return traces;
 }
 
-/**
- * @brief 读取流量容器，并打印到指定文件
- * @param traces 装有流量的容器
- * @param output_file 输出到的文件名
- */
 void PrintTraces(vector<Trace*> &traces, string output_file) {
     int traces_num = traces.size();
     FILE *fp = fopen(output_file.c_str(), "w");
@@ -232,10 +173,6 @@ void PrintTraces(vector<Trace*> &traces, string output_file) {
     fclose(fp);
 }
 
-/**
- * @brief 打印流量
- * @param traces 流量指针
- */
 void PrintTrace(Trace* &trace) {
     for(int j = 0; j < 5; ++j){
         printf("%u\t",trace->key[j]);
@@ -243,11 +180,6 @@ void PrintTrace(Trace* &trace) {
     printf("\n");
 }
 
-/**
- * @brief 读取答案容器，并打印到指定文件
- * @param ans 装有答案的容器
- * @param output_file 输出到的文件名
- */
 void PrintAns(vector<int> &ans, string output_file) {
     int ans_num = ans.size();
     FILE *fp = fopen(output_file.c_str(), "w");
@@ -257,11 +189,6 @@ void PrintAns(vector<int> &ans, string output_file) {
     fclose(fp);
 }
 
-/**
- * @brief 读取答案容器，并打印到指定文件
- * @param ans 装有答案的容器
- * @param output_file 输出到的文件名
- */
 void PrintAns(vector<double> &ans, string output_file) {
     int ans_num = ans.size();
     FILE *fp = fopen(output_file.c_str(), "w");

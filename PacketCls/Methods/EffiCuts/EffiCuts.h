@@ -10,14 +10,14 @@ using namespace std;
 
 class EffiCuts : public Classifier {
 public:
-    static double spfac;         /** 空间放大因子 */
-    static int max_depth;        /** 子树最大深度阈值 */
-    static int leaf_size;        /** 叶子节点阈值 */
-    static bool remove_redund;   /** 是否启用了冗余移除 */
-    static bool node_merge;      /** 是否启用了节点合并 */
-    static bool width_power2;    /** 是否优化成2的次幂 */
-    int tree_num;                /** 子树的个数 */
-    struct EffiNode **root;      /** 指向EffiCuts树的根节点 */
+    static double spfac;         
+    static int max_depth;        
+    static int leaf_size;        
+    static bool remove_redund;   
+    static bool node_merge;      
+    static bool width_power2;    
+    int tree_num;                
+    struct EffiNode **root;      
 
     EffiCuts();
     void Create(vector<Rule*> &rules, ProgramState *ps);    

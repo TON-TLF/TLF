@@ -9,22 +9,19 @@
 
 using namespace std;
 
-/**
- * @brief TDHyperCuts分类器类。
- */
 class TDHyperCuts : public Classifier {
 public:
-    static double spfac;                              /** 空间放大因子 */
-    static int max_depth;                             /** 子树最大深度阈值 */
-    static int leaf_size;                             /** 叶子节点阈值 */
-    static bool remove_redund;                        /** 是否启用了冗余移除 */
-    static bool node_merge;                           /** 是否启用了节点合并 */
-    static bool width_power2;                         /** 是否优化成2的次幂 */
-    int tree_num;                                     /** 子树的个数 */
-    struct TDHcNode *root;                         /** 指向TDHyperCuts树的根节点 */
+    static double spfac;                              
+    static int max_depth;                             
+    static int leaf_size;                             
+    static bool remove_redund;                        
+    static bool node_merge;                          
+    static bool width_power2;                       
+    int tree_num;                                    
+    struct TDHcNode *root;                       
 
-    static int total_trace_num;                       /** 总流量数量 */
-    static double wfac;                               /** 权重因子 */ 
+    static int total_trace_num;                     
+    static double wfac;                              
     static double pop_max;
     static double pop_min;
     static double pop_add_1;

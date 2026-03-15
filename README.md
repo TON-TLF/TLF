@@ -1,6 +1,16 @@
 # TLF
 Open-source implementation of the TLF algorithm proposed in the paper 《Traffic-Aware Design for Multi-dimensional Lookup and Forwarding: From IP Routing to Packet Classification》.
 
+## Prerequisites
+
+### 1. System & Build Environment
+* **Operating System**: Ubuntu 22.04.5 LTS
+* **Compiler**: G++ 11.4.0
+* **Build Tool**: GNU Make 4.3
+
+### 2. Dependencies
+* **Eigen 3**: 3.4.0
+
 ## Packet Classification Test
 ```bash
 cd PacketCls/

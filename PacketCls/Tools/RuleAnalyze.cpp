@@ -70,12 +70,12 @@ double MonteCarloCollisionCounter(vector<Rule*> &rules,int n){
     double cnt = 0;
     int rules_num = rules.size();
 
-    random_device rd;  // 获取随机数种子
-    mt19937 gen(rd()); // 以 rd() 初始化 Mersenne Twister 引擎
-    uniform_int_distribution<> distrib(0, rules_num-1); // 定义分布范围 [0, rules_num-1]
+    random_device rd;  
+    mt19937 gen(rd()); 
+    uniform_int_distribution<> distrib(0, rules_num-1); 
 
     for(int i = 1; i < n; i++){
-        int k = distrib(gen);// 生成随机数
+        int k = distrib(gen);
         if(k >= rules_num) {
             cout<<"MonteCarloCollisionCounter random error! "<<endl;
             cout<<k<<" "<<rules_num<<endl;

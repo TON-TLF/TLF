@@ -10,8 +10,8 @@ using namespace std;
 
 class HyperSplit : public Classifier {
 public:
-    static int binth;                                      /** 叶子节点规则数阈值 */
-    static bool remove_redund;                             /** 标记是否去除冗余 */
+    static int binth;                                     
+    static bool remove_redund;                             
 
     HsNode *root;      
     void Create(vector<Rule*> &rules, ProgramState *ps);
