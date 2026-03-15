@@ -7,14 +7,13 @@
 #include <mutex>
 #include <condition_variable>
 #include <chrono>
-#include <memory>  // for std::shared_ptr
+#include <memory>  
 #include <x86intrin.h>
 #include <pthread.h>
 
 using namespace std;
 
 int main(int argc, char *argv[]){
-    /** 获取并解析指令 */
     Command::Set(argc, argv);
     cout<<Command::output_file<<endl;
 
@@ -22,7 +21,6 @@ int main(int argc, char *argv[]){
     uint64_t cycles_start, cycles_end;
     ProgramState *ps = new ProgramState;
 
-    /** 1. 读取规则集与流量集 */
     vector<Prefix*> prefixs = ReadPrefixs(Command::prefixs_file);
     vector<Trace*> traces = ReadTraces(Command::traces_file);
     int prefixs_num = prefixs.size();
@@ -30,8 +28,6 @@ int main(int argc, char *argv[]){
     ps->prefixs_num = prefixs_num;
     ps->traces_num = traces_num;
 
-    /** 2. 准备流量信息 TopK统计*/
-    /** 使用 sketch 对流量进行统计 */
     string *trace_str = new string[traces_num + 10];
     clock_gettime(CLOCK_MONOTONIC, &ts_start); 
     TDHeavyKeeper tdhk(Command::TopK, 0.4 * 1024 * 1024 / 16);
@@ -43,13 +39,11 @@ int main(int argc, char *argv[]){
     ps->sketch_build_and_update_time = GetTimeInSeconds(ts_start, ts_end);
     ps->avg_insert_time = GetTimeInMicroSeconds(ts_start, ts_end) / (traces_num * 1.0);
 
-    /** 计算 topk 流量 */
     clock_gettime(CLOCK_MONOTONIC, &ts_start); 
     vector<TFNode> tdhkTF = tdhk.work();
     clock_gettime(CLOCK_MONOTONIC, &ts_end);
     ps->sketch_calculate_topk_time = GetTimeInSeconds(ts_start, ts_end);
 
-    /** 构建 topk 查询矩阵 */
     clock_gettime(CLOCK_MONOTONIC, &ts_start);
     TSL::InitTopKStats(tdhkTF);
     clock_gettime(CLOCK_MONOTONIC, &ts_end);
@@ -60,9 +54,8 @@ int main(int argc, char *argv[]){
     ps->sketch_memory_size = 1.0 * tdhk.calculateMemory() / 1024 / 1024;
     ps->topk_tracesFreq_memory_size = tdhkTF.size() * sizeof(TFNode) / 1024.0 / 1024.0; 
 	ps->TracesMat_memory_size = TSL::CalMemory() / 1024.0 / 1024.0;
-    cout << "TSL 初始化完成" << std::endl;
+    cout << "TSL init over" << std::endl;
 
-    /** 3. 根据参数初始化结构体 */
     bool is_Mat = false;
     Classifier *classifier;
     if (Command::method_name == "ABST" ){
@@ -102,7 +95,7 @@ int main(int argc, char *argv[]){
         ps->rules_analyze_time = GetTimeInSeconds(ts_start, ts_end);
 
         is_Mat = true;
-        if(m_star > 10){
+        if(N_eff > m_star){
             Poptrie_TD::TOP_LEVEL_STRIDE = 16;
             classifier = new Poptrie_TD;
         } else {
@@ -110,7 +103,6 @@ int main(int argc, char *argv[]){
         }
     }
     
-    /** 4. 创建查找结构 */
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
     classifier->Create(prefixs, ps);
 	clock_gettime(CLOCK_MONOTONIC, &ts_end);
@@ -134,13 +126,11 @@ int main(int argc, char *argv[]){
     }
 	std::cout<<"Create over!"<<std::endl;
 
-    /** 5.1 测试平均访存次数，并记录查询结果 */
     vector<uint32_t> Ans;
     for (int i = 0; i < traces_num; ++i){
         Ans.push_back(classifier->Lookup(traces[i], ps));
     }
 
-    /** 5.2 测试平均查询时间以及CPU Cycle */
     int lookup_round = Command::lookup_round;
     double total_lookup_times = 0;
     clock_gettime(CLOCK_MONOTONIC, &ts_start);

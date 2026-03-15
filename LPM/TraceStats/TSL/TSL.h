@@ -14,9 +14,6 @@ typedef struct TopKItem{
     }
 }TopKItem;
 
-/**
- * @brief 流量频数矩阵，存储每个流量频数的矩阵
- */
 class TSL{
 public:
     static bool isTopKInited;

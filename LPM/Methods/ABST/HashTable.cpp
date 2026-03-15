@@ -67,11 +67,9 @@ void HashTable_insert(HashTable* table, Entry entry) {
     // if(entry.prefix_len == 0)
     //     printf("index:%d\n",index);
 
-    // 检查是否已存在
     HashNode* current = table->buckets[index];
     while (current) {
         if (current->entry.prefix == entry.prefix) {
-            // 更新现有条目
             current->entry.label |= entry.label;
             if(entry.label == PREFIX){
                 current->entry.port = entry.port;
@@ -83,7 +81,6 @@ void HashTable_insert(HashTable* table, Entry entry) {
         current = current->next;
     }
     
-    // 创建新节点（头插法）
     HashNode* newNode = (HashNode*)malloc(sizeof(HashNode));
     newNode->entry = entry;
     newNode->next = table->buckets[index];
@@ -129,18 +126,14 @@ Entry* HashTable_lookup(HashTable* table, __uint128_t prefix) {
     return NULL;
 }
 
-// 计算哈希表的总存储开销（单位：字节）
 size_t HashTable_cal_memory(HashTable* table) {
     if (table == NULL) {
         return 0;
     }
     
     size_t total = 0;
-    // 1. 哈希表结构体本身的大小
     total += sizeof(HashTable);
-    // 2. 桶数组的大小（指针数组）
     total += table->bucket_size * sizeof(HashNode*);
-    // 3. 所有HashNode节点的总大小（包含其内部的Entry）
     total += table->count * sizeof(HashNode);
     
     return total;

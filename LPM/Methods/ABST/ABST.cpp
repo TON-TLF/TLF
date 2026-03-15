@@ -36,21 +36,17 @@ bool cmp_for_abst_td(const PrefixNode &a, const PrefixNode &b) {
     return a.prefix_score * 0.5 + a.trace_score * 0.5 > b.prefix_score * 0.5 + b.trace_score * 0.5; 
 }
 
-// 递归构建ABST树（返回子树根节点）
 AbstNode* build_tree(vector<PrefixNode> nodes) {
     if (nodes.size() == 0) return NULL;
     
-    // 选择当前最优节点作为根（已排序，首元素即最优）
     AbstNode* root = new AbstNode(nodes[0].prefix_len);
     
-    // 划分左右子树（左：更短前缀，右：更长前缀）
     vector<PrefixNode> left, right;
     for (size_t i = 1; i < nodes.size(); ++i) {
         if (nodes[i].prefix_len < root->prefix_len) left.push_back(nodes[i]);
         else right.push_back(nodes[i]);
     }
     
-    // 递归构建子树（保持降序特性）
     root->left = build_tree(left);
     root->right = build_tree(right);
     return root;
@@ -75,7 +71,6 @@ void ABST_insert_prefix(AbstNode* root, AbstTrieNode* aux, Entry entry) {
             HashTable_insert(node->table, entry);
             break;
         } else if (entry.prefix_len > node->prefix_len){
-            // 插入标记条目
             Entry marker = {
                 .label = MARKER,
                 .port = entry.port,
@@ -108,7 +103,6 @@ void ABST::Create(vector<Prefix*> &prefixs, ProgramState *ps){
         return;
     }
     
-    /** 构建辅助结构体 */
     aux = AbstTrieNode_create();
     for (size_t i = 0; i < prefixs_num; i++) {
         Entry entry = {
@@ -124,7 +118,6 @@ void ABST::Create(vector<Prefix*> &prefixs, ProgramState *ps){
         AbstTrie_insert(aux, entry);
     }
     
-    /** 统计前缀长度 */ 
     int prefix_cnt[129] = {0}; // 0-128
     for (size_t i = 0; i < prefixs_num; i++) {
         prefix_cnt[prefixs[i]->prefix_len]++;
@@ -171,13 +164,12 @@ uint32_t ABST::Lookup(Trace *trace, ProgramState *ps){
     while(node != NULL) {
         // printf("%d",node->prefix_len);
         // cout<<endl;
-        // 在当前节点的哈希表中查找截断后的前缀
         Entry* temp = HashTable_lookup(node->table, trim_prefix(ip, node->prefix_len), ps);
 		ps->lookup_access.Addcount();
         ps->lookup_depth.Addcount();
 
         if(temp == NULL){
-            node = node->left;   // 向左子树（更短前缀方向）查找
+            node = node->left;   
             continue;
         } 
         
@@ -201,10 +193,10 @@ uint32_t ABST::Lookup(Trace *trace, ProgramState *ps){
 
         if(markey_hit && prefix_hit){
             result = temp->port;
-            node = node->right;  // 向右子树（更长前缀方向）查找
+            node = node->right;  
         } else if(markey_hit){
             result = temp->bmp->port;
-            node = node->right;  // 向右子树（更长前缀方向）查找
+            node = node->right;  
         } else if(prefix_hit){
             result = temp->port;
             break;
@@ -225,7 +217,7 @@ uint32_t ABST::Lookup(Trace *trace){
     while(node != NULL) {
         Entry* temp = HashTable_lookup(node->table, trim_prefix(ip, node->prefix_len));
         if(temp == NULL){
-            node = node->left;   // 向左子树（更短前缀方向）查找
+            node = node->left;   
             continue;
         } 
         
@@ -234,10 +226,10 @@ uint32_t ABST::Lookup(Trace *trace){
 
         if(markey_hit && prefix_hit){
             result = temp->port;
-            node = node->right;  // 向右子树（更长前缀方向）查找
+            node = node->right;  
         } else if(markey_hit){
             result = temp->bmp->port;
-            node = node->right;  // 向右子树（更长前缀方向）查找
+            node = node->right;  
         } else if(prefix_hit){
             result = temp->port;
             break;
@@ -254,15 +246,12 @@ uint64_t calculateAbstNodeMemory(AbstNode* node) {
     
     uint64_t total = 0;
     
-    // 1. 当前节点本身的大小
     total += sizeof(AbstNode);
     
-    // 2. 节点中哈希表的内存开销（如果存在）
     if (node->table != nullptr) {
         total += HashTable_cal_memory(node->table);
     }
     
-    // 3. 递归计算左子树和右子树
     total += calculateAbstNodeMemory(node->left);
     total += calculateAbstNodeMemory(node->right);
     
@@ -271,13 +260,8 @@ uint64_t calculateAbstNodeMemory(AbstNode* node) {
 
 uint64_t ABST::CalMemory(){
     uint64_t total = 0;
-    
-    // 1. ABST对象本身的大小（包含root和aux指针等成员）
     total += sizeof(AbstNode *);
-    
-    // 2. 计算整个AbstNode二叉树的内存开销（包含所有节点和哈希表）
     total += calculateAbstNodeMemory(root);
-
     return total;
 }
 
@@ -298,7 +282,6 @@ void ABST_TD::Create(vector<Prefix*> &prefixs, ProgramState *ps){
         return;
     }
     
-    /** 构建辅助结构体 */
     aux = AbstTrieNode_create();
 
     for (size_t i = 0; i < prefixs_num; i++) {
@@ -315,13 +298,11 @@ void ABST_TD::Create(vector<Prefix*> &prefixs, ProgramState *ps){
         AbstTrie_insert(aux, entry);
     }
     
-    /** 统计前缀长度 */ 
     int prefix_cnt[129] = {0}; // 0-128
     for (size_t i = 0; i < prefixs_num; i++) {
         prefix_cnt[prefixs[i]->prefix_len]++;
     }
 
-    /* 查询TopK匹配*/
     int total_count = 0;
     int trace_cnt[129] = {0}; // 0-128
     for(auto it : TSL::TopKStats){
@@ -330,15 +311,9 @@ void ABST_TD::Create(vector<Prefix*> &prefixs, ProgramState *ps){
         total_count += it.count;
     }
 
-    /** 生成节点 */ 
     vector<PrefixNode> prefixNodes;
     for (int i = 0; i <= 128; i++) {
         if (prefix_cnt[i] != 0) {
-            // prefixNodes.push_back((PrefixNode){
-            //     .prefix_len = (uint8_t)i, 
-            //     .prefix_score = prefix_cnt[i] / (1.0 * prefixs_num),
-            //     .trace_score = TSL::abstPrefixSorce[i]}
-            // );
             prefixNodes.push_back((PrefixNode){
                 .prefix_len = (uint8_t)i, 
                 .prefix_score = prefix_cnt[i] / (1.0 * prefixs_num),
@@ -377,13 +352,12 @@ uint32_t ABST_TD::Lookup(Trace *trace, ProgramState *ps){
 
     while(node != NULL) {
         // printf("%d\n",node->prefix_len);
-        // 在当前节点的哈希表中查找截断后的前缀
         Entry* temp = HashTable_lookup(node->table, trim_prefix(ip, node->prefix_len), ps);
 		ps->lookup_access.Addcount();
         ps->lookup_depth.Addcount();
 
         if(temp == NULL){
-            node = node->left;   // 向左子树（更短前缀方向）查找
+            node = node->left;   
             continue;
         } 
         
@@ -404,10 +378,10 @@ uint32_t ABST_TD::Lookup(Trace *trace, ProgramState *ps){
 
         if(markey_hit && prefix_hit){
             result = temp->port;
-            node = node->right;  // 向右子树（更长前缀方向）查找
+            node = node->right; 
         } else if(markey_hit){
             result = temp->bmp->port;
-            node = node->right;  // 向右子树（更长前缀方向）查找
+            node = node->right; 
         } else if(prefix_hit){
             result = temp->port;
             break;
@@ -428,7 +402,7 @@ uint32_t ABST_TD::Lookup(Trace *trace){
     while(node != NULL) {
         Entry* temp = HashTable_lookup(node->table, trim_prefix(ip, node->prefix_len));
         if(temp == NULL){
-            node = node->left;   // 向左子树（更短前缀方向）查找
+            node = node->left;   
             continue;
         } 
         
@@ -437,10 +411,10 @@ uint32_t ABST_TD::Lookup(Trace *trace){
         
         if(markey_hit && prefix_hit){
             result = temp->port;
-            node = node->right;  // 向右子树（更长前缀方向）查找
+            node = node->right;  
         } else if(markey_hit){
             result = temp->bmp->port;
-            node = node->right;  // 向右子树（更长前缀方向）查找
+            node = node->right;  
         } else if(prefix_hit){
             result = temp->port;
             break;
@@ -452,13 +426,8 @@ uint32_t ABST_TD::Lookup(Trace *trace){
 
 uint64_t ABST_TD::CalMemory(){
     uint64_t total = 0;
-    
-    // 1. ABST对象本身的大小（包含root和aux指针等成员）
     total += sizeof(AbstNode *);
-    
-    // 2. 计算整个AbstNode二叉树的内存开销（包含所有节点和哈希表）
     total += calculateAbstNodeMemory(root);
-
     return total;
 }
 

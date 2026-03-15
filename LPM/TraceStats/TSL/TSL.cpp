@@ -35,9 +35,8 @@ double TSL::getTopKFreq(__uint128_t addr, uint8_t prefix_len){
     TopKItem start = {.addr = addr, .count = 0};
     TopKItem end = {.addr = addr | (((__uint128_t)1 << (128 - prefix_len)) - 1), .count = 0};
 
-    // 使用lower_bound和upper_bound定位范围
-    auto it = lower_bound(TSL::TopKStats.begin(), TSL::TopKStats.end(), start); // 第一个不小于start的元素
-    auto it_end = upper_bound(TSL::TopKStats.begin(), TSL::TopKStats.end(), end); // 第一个大于end的元素
+    auto it = lower_bound(TSL::TopKStats.begin(), TSL::TopKStats.end(), start); 
+    auto it_end = upper_bound(TSL::TopKStats.begin(), TSL::TopKStats.end(), end); 
     
     double total_count = 0.0;
     for (; it != it_end; ++it){
@@ -50,10 +49,8 @@ double TSL::getTopKFreq(__uint128_t addr, uint8_t prefix_len){
 size_t TSL::CalMemory(){
     size_t total_memory = 0;
 
-    // 计算ipv6Trie的内存
     // total_memory += TSL::ipv6Trie.CalMemory();
 
-    // 计算TopKStats的内存
     total_memory += TSL::TopKStats.size() * sizeof(TopKItem);
 
     return total_memory;

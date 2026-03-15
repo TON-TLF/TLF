@@ -10,7 +10,6 @@
 
 using namespace std;
 
-/* 节点结构体 */
 class AbstNode {
 public:
     uint8_t prefix_len;

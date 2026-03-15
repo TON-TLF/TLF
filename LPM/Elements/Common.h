@@ -12,7 +12,7 @@ using namespace std;
 #include <iostream>
 #include <cstdio>
 #include <cinttypes>
-#include <cctype> // 用于字符处理函数
+#include <cctype>
 
 #include <map>
 #include <set>
@@ -22,7 +22,7 @@ using namespace std;
 #include <unordered_map>
 #include <cmath>
 #include <cstdlib>
-#include <iomanip>  // 用于格式化浮点数输出
+#include <iomanip> 
 
 #include <math.h>
 #include <algorithm>
@@ -33,5 +33,5 @@ using namespace std;
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <cassert>   // 断言检查依赖
+#include <cassert>   
 #endif

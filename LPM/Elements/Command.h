@@ -5,22 +5,19 @@
 
 using namespace std;
 
-/**
- * @brief 命令类
- */
 class Command{
 public:
-    static string run_mode;     /** 运行模式 */
-    static string method_name;  /** 包分类方法名称 */
+    static string run_mode;     
+    static string method_name; 
 
-	static string prefixs_file;   /** 规则文件路径 */
-	static string traces_file;  /** 流量文件路径 */
-	static string output_file;  /** 输出文件路径 */
+	static string prefixs_file;  
+	static string traces_file; 
+	static string output_file;  
 
-    static int lookup_round;    /** 查找轮数 */
-    static int TopK;    /** TopK */
+    static int lookup_round;   
+    static int TopK;  
 
-    static bool Set(int argc, char *argv[]);  /** 自定义构造函数 */
+    static bool Set(int argc, char *argv[]); 
 };
 
 #endif

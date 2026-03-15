@@ -15,7 +15,7 @@ typedef struct TFNode{
 	uint32_t count;
 
     TFNode(string s, uint32_t c) 
-        : str(move(s)), count(c) {}  // 用move优化字符串传递效率
+        : str(move(s)), count(c) {} 
 
 	bool operator<(const TFNode& tfnode) const {
 		return count > tfnode.count;

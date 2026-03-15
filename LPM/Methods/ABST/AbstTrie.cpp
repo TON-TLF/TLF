@@ -15,7 +15,6 @@ void AbstTrie_insert(AbstTrieNode* root, Entry entry) {
     uint8_t dep = 0;
     
     while (dep != entry.prefix_len) {
-        // 计算当前比特位（从左到右）
         uint8_t bit = (entry.prefix >> (127 - dep)) & 1;
         
         if (!node->child[bit]) {

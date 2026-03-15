@@ -5,23 +5,13 @@ using namespace std;
 /***************************************************************/
 /*                         CountState                          */
 /***************************************************************/
-/**
- * @brief 默认构造函数
- */
 CountState::CountState(){ 
     count = cnt = calNum = 0;
 	maxn = avg = 0;
     minn = 1e9;
 }
 
-/**
- * @brief 增加单次访问次数
- */
 void CountState::Addcount() { ++cnt; } 
-
-/**
- * @brief 计算最大最小平均值
- */
 void CountState::Cal() {
     maxn = max(maxn,cnt);
     minn = min(minn,cnt);
@@ -31,9 +21,6 @@ void CountState::Cal() {
     avg = (double)count / calNum;
 }
 
-/**
- * @brief 清除当前访问信息  
- */
 void CountState::Clear() { 
     count = cnt = calNum = 0;
 	maxn = avg = 0;
@@ -43,11 +30,6 @@ void CountState::Clear() {
 /***************************************************************/
 /*                        ProgramState                         */
 /***************************************************************/
-
-
-/**
- * @brief 默认构造函数
- */
 ProgramState::ProgramState(){
     prefixs_num = traces_num = 0;         
 	rules_memory_size = traces_memory_size = sketch_memory_size = topk_tracesFreq_memory_size = TracesMat_memory_size = tree_memory_size = total_memory_size = 0;              
@@ -61,9 +43,6 @@ ProgramState::ProgramState(){
     avg_lookup_access_entry = max_lookup_access_entry = 0;
 }
 
-/**
- * @brief 计算统计信息
- */
 void ProgramState::CalInfo(){
     avg_lookup_access = lookup_access.avg;
     max_lookup_access = lookup_access.maxn;
@@ -72,9 +51,6 @@ void ProgramState::CalInfo(){
     max_lookup_access_entry = lookup_access_entry.maxn;
 }
 
-/**
- * @brief 清除当前统计信息
- */
 void ProgramState::Clear(){
     prefixs_num = traces_num = 0;         
 
@@ -93,17 +69,12 @@ void ProgramState::Clear(){
     lookup_depth.Clear();
 }
 
-/**
- * @brief 清除当前统计信息
- */
 void ProgramState::ClearAccess(){
 	lookup_access_entry.Clear(); 
 	lookup_access.Clear(); 
     lookup_depth.Clear();
 }
-/**
- * @brief 输出当前统计信息到指定文件
- */
+
 void ProgramState::Print(){
     FILE *fp = fopen(Command::output_file.c_str(), "w");
     fprintf(fp, "prefixs_filename: %s\n", Command::prefixs_file.c_str());
