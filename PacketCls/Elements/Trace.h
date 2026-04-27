@@ -22,18 +22,12 @@ struct Trace{
     }
 };
 
-struct TFNode{
-	string str;
-	uint64_t freq;
-	uint64_t thre;
-	bool operator<(const TFNode& tfnode) const {
-		return freq > tfnode.freq;
-    }
-};
-
 struct TraceFreq{
 	Trace trace;
 	double freq;
+	bool operator<(const TraceFreq& tf) const {
+		return freq > tf.freq;
+    }
 };
 
 #endif

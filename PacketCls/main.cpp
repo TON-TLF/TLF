@@ -45,8 +45,9 @@ int main(int argc, char *argv[]){
     cout << "Sketch insert over!" << endl;
 
     clock_gettime(CLOCK_MONOTONIC, &ts_start);
-    vector<TFNode> hkTF = sketch.work();  
-    vector<TraceFreq> topktracesfreq = TFNodeToTraceFreq(hkTF);
+    // vector<TFNode> hkTF = sketch.work();  
+    // vector<TraceFreq> topktracesfreq = TFNodeToTraceFreq(hkTF);
+    vector<TraceFreq> topktracesfreq = sketch.work();
     clock_gettime(CLOCK_MONOTONIC, &ts_end);
     ps->sketch_calculate_topk_time = GetTimeInSeconds(ts_start, ts_end);
     cout<<"Cal Topk over!"<<endl;

@@ -68,17 +68,11 @@ public:
 
     void insert(string str)
     {
-        //cout<<"begin "<<str<<endl;
-        
-        //cout<<"p = "<<p<<endl;
-        //cout<<"insert "<<mon<<" "<<p<<" "<<ss->node[p].sum<<endl;
-
         int maxv=0;
         unsigned long long H = Hash(str); 
         int FP= (H>>56); 
 
         bool mon = false;
-        //int p = ss->find(str); 
         int p = ss->find(str, H);
         if (p) mon = true; 
 
@@ -87,7 +81,6 @@ public:
             int c = HK[j][Hsh].C; 
             if (HK[j][Hsh].FP == FP)
             {
-                //cout<<1<<endl;
                 if (mon || c <= POW2(ss->getmin() + 1)){
                     HK[j][Hsh].C++; 
                 } 
@@ -101,7 +94,6 @@ public:
                 }
                 if (!(rand() % powans)) 
                 {
-                    //cout<<"2 "<<HK[j][Hsh].C<<" "<<powans<<endl;
                     if (HK[j][Hsh].C > 0) { 
                         HK[j][Hsh].C--;
                     }
@@ -114,15 +106,13 @@ public:
                 }
             }
         }
-        //cout<<"maxv = "<<maxv<<"  "<<log2(maxv + 1)<<endl;
+        
         int log_maxv = LOG2(maxv + 1);
         
         if (!mon) {
             if (log_maxv - ss->getmin() == 1 || ss->tot < K) 
             {
                 int id = ss->getid(); 
-                //cout<<"id = "<<id<<endl;
-                //ss->addHash(ss->location(str), id); 
                 ss->addHash(H, id);
                 ss->node[id].str = str;  
                 ss->node[id].sum = log_maxv; 
@@ -133,13 +123,11 @@ public:
                     int t = ss->getmin(); 
                     int tmp = ss->head[t].id; 
                     ss->cut(ss->head[t].id); 
-                    //ss->recycling(tmp); 
                     ss->recycling(tmp, Hash(ss->node[tmp].str));
                 }
             }
         } else if (log_maxv > ss->node[p].sum) {
             int tmp=ss->head[ss->node[p].sum].left; 
-            //cout<<"tmp = "<<tmp<<" maxv = "<<maxv<<" "<<ss->node[p].sum<<endl;
             ss->cut(p); 
             if(ss->head[ss->node[p].sum].id) tmp=ss->node[p].sum; 
             ss->node[p].sum=log_maxv; 
@@ -148,15 +136,32 @@ public:
         } else {
             ss->node[p].start_sum = maxv;
         }
-        //cout<<"over!"<<endl;
     }
 
-    vector<TFNode> work() {  
-        vector<TFNode> result;
+    vector<TraceFreq> work() {  
+        vector<TraceFreq> result;
         for(int i = TD_MAX_FLOW_NUM; i; i = ss->head[i].left) {
             for(int j = ss->head[i].id; j; j = ss->node[j].nxt) 
             {
-                result.push_back({ss->node[j].str, (uint64_t)ss->node[j].start_sum});
+                TraceFreq tmp;
+                const unsigned char* ptr = reinterpret_cast<const unsigned char*>(ss->node[j].str.data());
+
+                tmp.freq = ss->node[j].start_sum;
+                tmp.trace.key[0] =  (static_cast<uint32_t>(ptr[0]) << 24) |
+                                    (static_cast<uint32_t>(ptr[1]) << 16) |
+                                    (static_cast<uint32_t>(ptr[2]) << 8)  |
+                                    (static_cast<uint32_t>(ptr[3]));
+                tmp.trace.key[1] =  (static_cast<uint32_t>(ptr[4]) << 24) |
+                                    (static_cast<uint32_t>(ptr[5]) << 16) |
+                                    (static_cast<uint32_t>(ptr[6]) << 8)  |
+                                    (static_cast<uint32_t>(ptr[7]));
+                tmp.trace.key[2] =  (static_cast<uint32_t>(ptr[8]) << 8)  |
+                                    (static_cast<uint32_t>(ptr[9]));
+                tmp.trace.key[3] =  (static_cast<uint32_t>(ptr[10]) << 8) |
+                                    (static_cast<uint32_t>(ptr[11]));
+                tmp.trace.key[4] =   static_cast<uint32_t>(ptr[12]);
+
+                result.push_back(tmp);
             }
         } 
         sort(result.begin(), result.end()); 
