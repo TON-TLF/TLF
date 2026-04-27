@@ -2,16 +2,6 @@
 
 using namespace std;
 
-double GetRunTimeInSeconds(timeval timeval_start, timeval timeval_end) {
-    uint64_t time_us = 1000000 * (timeval_end.tv_sec - timeval_start.tv_sec) + (timeval_end.tv_usec - timeval_start.tv_usec);
-    return time_us / 1000000.0;  
-}
-
-double GetRunTimeInMicroSeconds(timeval timeval_start, timeval timeval_end) {
-    uint64_t time_us = 1000000 * (timeval_end.tv_sec - timeval_start.tv_sec) + (timeval_end.tv_usec - timeval_start.tv_usec);
-    return time_us;  
-}
-
 double GetTimeInSeconds(struct timespec start, struct timespec end) {
     long seconds = end.tv_sec - start.tv_sec;
     long nanoseconds = end.tv_nsec - start.tv_nsec;
@@ -34,64 +24,6 @@ __uint128_t trim_prefix(__uint128_t prefix, uint8_t len) {
     return (len == 0) ? (__uint128_t)0 : (prefix & prefix_mask(len));
 }
 
-__uint128_t StrToUint128(const string& str) {
-    __uint128_t result = 0;
-    for (char c : str) {
-        if (isdigit(c)) { 
-            result = result * 10 + (c - '0');
-        }
-    }
-    return result;
-}
-
-string Uint128ToStr(__uint128_t ip) {
-    if (ip == 0) return "0";
-    
-    string result;
-    while (ip) {
-        result = char('0' + ip % 10) + result;
-        ip /= 10;
-    }
-    return result;
-}
-
-__uint128_t GetLargestPowerOfTwo(__uint128_t n) {
-    if (n == 0) return 0;
-    
-    __uint128_t value = 1;
-    while (value <= n / 2) {
-        value *= 2;
-    }
-    return value;
-}
-
-int log2_floor(__uint128_t value) {
-    if (value == 0) return 0;
-    int bits = 0;
-    __uint128_t temp = value;
-    while (temp > 1) {
-        bits++;
-        temp >>= 1;
-    }
-    return bits;
-}
-double Log2_128(__uint128_t value) {
-    if (value == 0) return 0;
-    
-    int bits = 0;
-    __uint128_t tmp = value;
-    while (tmp > 1) {
-        bits++;
-        tmp >>= 1;
-    }
-    return bits;  
-}
-
-double SafeScopeFactor(__uint128_t low, __uint128_t high, double max_scope) {
-    double log_range = Log2_128(high) - Log2_128(low);
-    double log_max = log2(max_scope);
-    return exp2(log_range - log_max);
-}
 
 string traceToString(const Trace* trace) {
     assert(trace != nullptr && "traceToString: Trace 指针不可为空！");
